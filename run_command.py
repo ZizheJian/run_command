@@ -5,6 +5,7 @@ import shlex
 import signal
 import subprocess
 import termios
+from collections.abc import Sequence
 
 def normalize_output(output:str)->str:
     return output.replace("\r\n","\n")
@@ -23,8 +24,8 @@ def terminate_process_group(proc:subprocess.Popen):
             pass
         proc.wait()
 
-def run_command(command:str,silent:bool=False,cwd:str|None=None)->str:
-    command_list=shlex.split(command)
+def run_command(command:str|Sequence[object],silent:bool=False,cwd:str|None=None)->str:
+    command_list=shlex.split(command) if isinstance(command,str) else [str(value) for value in command]
     if not command_list:
         raise ValueError(f"没有成功解析指令：{command}")
     if silent:
